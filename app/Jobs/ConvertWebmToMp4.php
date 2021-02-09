@@ -11,6 +11,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
+use Symfony\Component\Process\Process;
 
 class ConvertWebmToMp4 implements ShouldQueue
 {
@@ -37,12 +38,29 @@ class ConvertWebmToMp4 implements ShouldQueue
     {
         $format = new \FFMpeg\Format\Video\X264('aac');
 
+        $format->setAdditionalParameters([
+            '-profile:v', 'baseline',
+            '-level:v', '3.1',
+            '-movflags', 'faststart',
+            '-vsync', 'vfr',
+        ]);
+
         $fname = pathinfo($this->video->local_path, PATHINFO_FILENAME);
 
         $old = $this->video->local_path;
 
+        # run file through ts-ebml first
+        $ebmlPath = base_path('node_modules/.bin/');
+        $path = storage_path('app/public/'.$old);
+        $dir = dirname($path);
+        $process = Process::fromShellCommandline($ebmlPath.'/ts-ebml -s "$VAR1" | cat > "$VAR2"', $dir);
+        $process->start(null, ['VAR1' => $path, 'VAR2' => $dir.'/'.$fname.'-converted.webm']);
+        $process->wait();
+
+        Storage::delete('public/'.$old);
+
         FFMpeg::fromDisk('local')
-            ->open('public/'.$this->video->local_path)
+            ->open('public/uploaded_videos/'.$fname.'-converted.webm')
             ->export()
             ->toDisk('local')
             ->inFormat($format)
@@ -50,7 +68,6 @@ class ConvertWebmToMp4 implements ShouldQueue
 
         $this->video->local_path = 'uploaded_videos/'.$fname.'.mp4';
         $this->video->save();
-
-        Storage::delete('public/'.$old);
+        Storage::delete('public/uploaded_videos/'.$fname.'-converted.webm');
     }
 }

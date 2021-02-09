@@ -59,6 +59,9 @@
         ],
         "post-create-project-cmd": [
             "@php artisan key:generate --ansi"
+        ],
+        "horizon": [
+            "yarn nodemon --exec \"php artisan horizon\" -e php,blade.php --signal SIGTERM"
         ]
     }
 }
