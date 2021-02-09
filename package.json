@@ -1,0 +1,27 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npm run development",
+        "development": "mix",
+        "watch": "mix watch",
+        "watch-poll": "mix watch -- --watch-options-poll=1000",
+        "hot": "mix watch --hot",
+        "prod": "npm run production",
+        "production": "mix --production"
+    },
+    "devDependencies": {
+        "@babel/preset-react": "^7.12.13",
+        "@pmmmwh/react-refresh-webpack-plugin": "^0.5.0-beta.0",
+        "axios": "^0.21",
+        "laravel-mix": "github:JeffreyWay/laravel-mix#master",
+        "lodash": "^4.17.19",
+        "postcss": "^8.1.14",
+        "react-refresh": "^0.9.0"
+    },
+    "dependencies": {
+        "react": "^16.14.0",
+        "react-dom": "^16.14.0",
+        "react-video-recorder": "^3.17.2",
+        "styled-components": "^5.2.1"
+    }
+}
